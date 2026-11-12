@@ -76,7 +76,10 @@ assert_equal(make_field_name("Exhaust"), "exhaust")
 
 
 def is_positive_number(text: str) -> bool:
-    """Check that the text is a nonzero and positive number (decimals allowed)."""
+    """
+    Check that the text is a nonzero and positive number
+    (decimals allowed).
+    """
     digits_only = text.strip().replace(".", "", 1)
     if not digits_only.isdigit():
         return False
@@ -214,7 +217,9 @@ def estimate_zero_to_sixty(old_time: float, old_hp: int, old_weight: int,
     """
     Scale the stock 0-60 time by how much the pounds-per-horsepower
     ratio changed. Rounded to two decimal places.
-    The engineering priciple [ 1/2 * m * v² = P * t  ->  t = m * v² / (2P) ] is used to calulate the time.
+    The engineering principle
+    [ 1/2 * m * v² = P * t  ->  t = m * v² / (2P) ]
+    is used to calculate the time.
     """
     old_ratio = old_weight / old_hp
     new_ratio = new_weight / new_hp
@@ -273,25 +278,86 @@ def performance_verdict(state: State) -> str:
 # Tests for performance_verdict are below, after the test states are made.
 
 
+def site_description() -> str:
+    """Return the one-sentence description of the website."""
+    return ("ModMyRide estimates how modifications change a BMW's "
+            "horsepower, power-to-weight ratio, 0-60 time, and top speed.")
+
+assert_equal(site_description()[:9], "ModMyRide")
+
+
+def site_sources() -> list[str]:
+    """Return the list of sources used to build the website."""
+    return ["Drafter documentation", "Bakery textbook", "Claude LLM"]
+
+assert_equal(len(site_sources()), 3)
+
+
+def site_planning() -> list[str]:
+    """Return the names of the project's planning documents."""
+    return ["Ripanti CS1 Final Project 0: Pick a Problem",
+            "Ripanti CS1 Final Project 1: Design"]
+
+assert_equal(len(site_planning()), 2)
+
+
+def site_links() -> list[str]:
+    """Return the list of links related to the project."""
+    return ["https://github.com/gripanti/Car-Modification-App/"]
+
+assert_equal(site_links(),
+             ["https://github.com/gripanti/Car-Modification-App/"])
+
+
+def about_section() -> list:
+    """
+    Return the "About This Site" content shown on the home page, built
+    from the same helpers that set_site_information uses.
+    """
+    return [
+        Header("About This Site", 3),
+        Header("Author", 4),
+        "Grayden Ripanti",
+        Header("Description", 4),
+        site_description(),
+        Header("Sources", 4),
+        BulletedList(site_sources()),
+        Header("Planning", 4),
+        BulletedList(site_planning()),
+        Header("Links", 4),
+        BulletedList(site_links()),
+    ]
+
+assert_equal(len(about_section()), 11)
+assert_equal(about_section()[1], Header("Author", 4))
+assert_equal(about_section()[2], "Grayden Ripanti")
+
+
 # Routes
 
 @route
 def index(state: State) -> Page:
-    """Home page: introduces ModMyRide."""
-    return Page(state, [
+    """
+    Home page: introduces ModMyRide.
+    The site information is shown at the bottom of this page.
+    """
+    content = [
         Header("ModMyRide"),
         "The BMW Performance Calculator",
         "Enter your car's stock numbers, choose your mods, and see an "
         "estimate of your new horsepower, power-to-weight ratio, "
         "0-60 time, and top speed.",
         Button("Get Started", car_input_page),
-    ])
+    ]
+    content.extend(about_section())
+    return Page(state, content)
 
 
 @route
 def car_input_page(state: State) -> Page:
     """Input page: the user types in the car's stock performance numbers.
-       The user is also given the option to moive tpo the next page of go back home.
+       The user is also given the option to move to the next page
+       or go back home.
     """
     content = [Header("Enter Your Car's Stock Stats", 2)]
     if state.error_message != "":
@@ -313,7 +379,8 @@ def save_car_stats(state: State, horsepower: str, weight: str,
                    zero_to_sixty: str, top_speed: str) -> Page:
     """
     Check the four stock values. If any is not a positive number, show the
-    input page again with an error. If everything checks out, save them and move on.
+    input page again with an error. If everything checks out, save them
+    and move on.
     """
     if not (is_positive_number(horsepower) and is_positive_number(weight)
             and is_positive_number(zero_to_sixty)
@@ -332,7 +399,8 @@ def save_car_stats(state: State, horsepower: str, weight: str,
 @route
 def modification_page(state: State) -> Page:
     """Modification page: one CheckBox for each available upgrade.
-       The user will have the option to calculate the performace results or go back to car stats.
+       The user will have the option to calculate the performance results
+       or go back to car stats.
     """
     content = [Header("Choose Your Modifications", 2)]
     if state.error_message != "":
@@ -355,16 +423,20 @@ def select_modification(state: State, cold_air_intake: bool, exhaust: bool,
                         weight_reduction: bool) -> Page:
     """
     Save which checkboxes were ticked. If the choices break a tuning rule,
-    send the user back to the modification page with an error. If not, calculate the results.
+    send the user back to the modification page with an error. If not,
+    calculate the results.
     """
     """
-    A dictionary is used here. Drafter passes each checkbox in as its own True/False parameter.
+    A dictionary is used here. Drafter passes each checkbox in as its own
+    True/False parameter.
     To copy those values onto the matching Modification objects, this
     dictionary pairs each checkbox's name with whether it was ticked.
     For example, choices["exhaust"] gives back the value of the
-    exhaust parameter. The loop below turns each mod's name into its checkbox name with
+    exhaust parameter. The loop below turns each mod's name into its
+    checkbox name with
     make_field_name (ex. "Cold Air Intake" -> "cold_air_intake"),
-    looks that name up in the dictionary, and saves the True/False result in mod.selected.
+    looks that name up in the dictionary, and saves the True/False result
+    in mod.selected.
     """
     choices = {"cold_air_intake": cold_air_intake, "exhaust": exhaust,
                "stage_1_tune": stage_1_tune, "stage_2_tune": stage_2_tune,
@@ -483,7 +555,7 @@ assert_equal(index(make_starting_state()), Page(make_starting_state(), [
     "estimate of your new horsepower, power-to-weight ratio, "
     "0-60 time, and top speed.",
     Button("Get Started", car_input_page),
-]))
+] + about_section()))
 
 # car_input_page: header, 4 labels, 4 text boxes, 2 buttons
 assert_equal(car_input_page(make_test_state()).state, make_test_state())
@@ -552,12 +624,10 @@ assert_equal(start_over(make_stage_2_state()).state, make_starting_state())
 
 
 set_site_information(
-    author="Grayden Ripanti",
-    description="ModMyRide estimates how modifications change a \
-                BMW's horsepower, power-to-weight ratio, 0-60 time, \
-                and top speed.",
-    sources=["Drafter documentation", "Bakery textbook", "Claude LLM"],
-    planning=["Ripanti CS1 Final Project 0: Pick a Problem", "Ripanti CS1 Final Project 1: Design"],
-    links=["https://github.com/gripanti/Car-Modification-App/"]
+    author = "Grayden Ripanti",
+    description = site_description(),
+    sources = site_sources(),
+    planning = site_planning(),
+    links = site_links()
 )
 start_server(make_starting_state())
