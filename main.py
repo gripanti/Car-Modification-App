@@ -553,11 +553,11 @@ assert_equal(start_over(make_stage_2_state()).state, make_starting_state())
 
 set_site_information(
     author="Grayden Ripanti",
-    description="ModMyRide estimates how modifications change a "
-                "BMW's horsepower, power-to-weight ratio, 0-60 time, "
-                "and top speed.",
-    sources=["Drafter documentation", "Bakery textbook"],
+    description="ModMyRide estimates how modifications change a \
+                BMW's horsepower, power-to-weight ratio, 0-60 time, \
+                and top speed.",
+    sources=["Drafter documentation", "Bakery textbook", "Claude LLM"],
     planning=["Ripanti CS1 Final Project 0: Pick a Problem", "Ripanti CS1 Final Project 1: Design"],
-    links=[]
+    links=["https://github.com/gripanti/Car-Modification-App/"]
 )
 start_server(make_starting_state())
